@@ -1,6 +1,12 @@
-# RekognitionUi
+# Rekognition app
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.3.
+
+## Cordova steps
+
+Run the following commands:
+`npm i -g cordova`
+`cordova add platform android`
 
 ## Development server
 
