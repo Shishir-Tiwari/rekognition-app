@@ -1,0 +1,20 @@
+.example-card {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.form-width{
+	padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+.form-width label {
+  font-size: 18px;
+  font-weight: 1000;
+
+}
+
+.layout-center {
+  margin: auto;
+}
