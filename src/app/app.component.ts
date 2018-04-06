@@ -12,6 +12,8 @@ export class AppComponent implements OnInit {
   title = 'hello app';
   loading = false;
   error = false;
+  success = false;
+  preview = false;
   ngOnInit() {
     // this.loading = false;
     // this.error = false;
@@ -20,10 +22,13 @@ export class AppComponent implements OnInit {
   processImage(file) {
     const preview = document.querySelector('img[name=preview]');
     const reader = new FileReader();
+    this.preview = false;
     this.anonLog();
     reader.onload = (e: any) => {  // Load base64 encoded image
       const result = e.target.result;
       (<HTMLImageElement>preview).src = result;
+      this.preview = true;
+
       this.encodeImage(result);
     };
     reader.readAsDataURL(file);
@@ -90,7 +95,7 @@ export class AppComponent implements OnInit {
         console.log(err, err.stack); // an error occurred
       } else {
        this.loading = false;
-       let table = '<table><tr><th>Low</th><th>High</th></tr>';
+       let table = '<table height="350px"><tr><th>Low</th><th>High</th></tr>';
         // show each face and build out estimated age table
         for (let i = 0; i < data.FaceDetails.length; i++) {
           table += '<tr><td>' + data.FaceDetails[i].AgeRange.Low +
@@ -121,7 +126,8 @@ export class AppComponent implements OnInit {
         console.log(err); // an error occurred
       } else {
        this.loading = false;
-       let table = '<table class="table table-dark table-striped"><tr><th>Name</th><th>Confidence</th></tr>';
+       this.success = true;
+       let table = '<table height="350px" class="table table-dark table-striped"><tr><th>Name</th><th>Confidence</th></tr>';
         // show each face and build out estimated age table
         console.log(data.Labels);
         for (let i = 0; i < data.Labels.length; i++) {
