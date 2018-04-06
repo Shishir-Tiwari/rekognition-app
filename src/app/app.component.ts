@@ -8,27 +8,27 @@ declare var device;
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
   title = 'hello app';
   loading = false;
   error = false;
   ngOnInit() {
-    //this.loading = false;
-    //this.error = false;
+    // this.loading = false;
+    // this.error = false;
   }
 
   processImage(file) {
-    var preview = document.querySelector('img[name=preview]');
-    var reader = new FileReader();
-    this.anonLog();  
-    reader.onload = (e: any) => {  // Load base64 encoded image 
-      var result = e.target.result;       
+    const preview = document.querySelector('img[name=preview]');
+    const reader = new FileReader();
+    this.anonLog();
+    reader.onload = (e: any) => {  // Load base64 encoded image
+      const result = e.target.result;
       (<HTMLImageElement>preview).src = result;
-      this.encodeImage(result);      
-    }
+      this.encodeImage(result);
+    };
     reader.readAsDataURL(file);
   }
-  
+
   anonLog() {
     // Configure the credentials provider to use your identity pool
     AWS.config.region = 'us-east-2'; // Region
@@ -38,43 +38,43 @@ export class AppComponent implements OnInit{
     // Make the call to obtain credentials
     (<AWS.CognitoIdentityCredentials>AWS.config.credentials).get(function () {
       // Credentials will be available when this function is called.
-      var accessKeyId = AWS.config.credentials.accessKeyId;
-      var secretAccessKey = AWS.config.credentials.secretAccessKey;
-      var sessionToken = AWS.config.credentials.sessionToken;
+      const accessKeyId = AWS.config.credentials.accessKeyId;
+      const secretAccessKey = AWS.config.credentials.secretAccessKey;
+      const sessionToken = AWS.config.credentials.sessionToken;
     });
   }
 
   encodeImage(result) {
-    var image = null;
-    var jpg = true;
+    let image = null;
+    let jpg = true;
     try {
-      image = atob(result.split("data:image/jpeg;base64,")[1]);
+      image = atob(result.split('data:image/jpeg;base64,')[1]);
     } catch (e) {
       jpg = false;
     }
-    if (jpg == false) {
+    if (jpg === false) {
       try {
-        image = atob(result.split("data:image/png;base64,")[1]);
+        image = atob(result.split('data:image/png;base64,')[1]);
       } catch (e) {
         this.error = true;
         return;
       }
     }
-    //unencode image bytes for Rekognition DetectFaces API 
-    var length = image.length;
-    var imageBytes = new ArrayBuffer(length);
-    var ua = new Uint8Array(imageBytes);
-    for (var i = 0; i < length; i++) {
+    // unencode image bytes for Rekognition DetectFaces API
+    const length = image.length;
+    const imageBytes = new ArrayBuffer(length);
+    const ua = new Uint8Array(imageBytes);
+    for (let i = 0; i < length; i++) {
       ua[i] = image.charCodeAt(i);
     }
-    //Call Rekognition  
+    // Call Rekognition
     this.detectLabels(imageBytes);
   }
 
   detectFaces(imageData) {
-    //AWS.region = "us-east-2";
-    var rekognition = new AWS.Rekognition();
-    var params = {
+    // AWS.region = "us-east-2";
+    const rekognition = new AWS.Rekognition();
+    const params = {
       Image: {
         Bytes: imageData
       },
@@ -88,55 +88,54 @@ export class AppComponent implements OnInit{
         this.error = true;
         this.loading = false;
         console.log(err, err.stack); // an error occurred
-      }
-      else {
+      } else {
        this.loading = false;
-       var table = "<table><tr><th>Low</th><th>High</th></tr>";
+       let table = '<table><tr><th>Low</th><th>High</th></tr>';
         // show each face and build out estimated age table
-        for (var i = 0; i < data.FaceDetails.length; i++) {
+        for (let i = 0; i < data.FaceDetails.length; i++) {
           table += '<tr><td>' + data.FaceDetails[i].AgeRange.Low +
             '</td><td>' + data.FaceDetails[i].AgeRange.High + '</td></tr>';
         }
-        table += "</table>";
-        document.getElementById("opResult").innerHTML = table;
+        table += '</table>';
+        document.getElementById('opResult').innerHTML = table;
       }
     });
   }
 
   detectLabels(imageData) {
-    //AWS.region = "us-east-2";
-    var rekognition = new AWS.Rekognition();
-    var params = {
+    // AWS.region = "us-east-2";
+    const rekognition = new AWS.Rekognition();
+    const params = {
       Image: {
         Bytes: imageData
       },
-      MaxLabels: 5, 
+      MaxLabels: 5,
       MinConfidence: 80
     };
+    this.error = false;
     this.loading = true;
     rekognition.detectLabels(params, (err, data) => {
       if (err || data.Labels.length === 0) {
         this.error = true;
         this.loading = false;
         console.log(err); // an error occurred
-      } 
-      else {
+      } else {
        this.loading = false;
-       var table ='<table class="table table-dark table-striped"><tr><th>Name</th><th>Confidence</th></tr>';
+       let table = '<table class="table table-dark table-striped"><tr><th>Name</th><th>Confidence</th></tr>';
         // show each face and build out estimated age table
         console.log(data.Labels);
-        for (var i = 0; i < data.Labels.length; i++) {
-          table += '<tr><td>' + data.Labels[i].Name+
+        for (let i = 0; i < data.Labels.length; i++) {
+          table += '<tr><td>' + data.Labels[i].Name +
             '</td><td>' + data.Labels[i].Confidence + '</td></tr>';
         }
-        table += "</table>";
-        document.getElementById("opResult").innerHTML = table;
+        table += '</table>';
+        document.getElementById('opResult').innerHTML = table;
       }
     });
   }
 
   uploadImage(event: any) {
-    var file = (<HTMLInputElement>event.target).files[0];
+    const file = (<HTMLInputElement>event.target).files[0];
     this.processImage(file);
   }
 }
