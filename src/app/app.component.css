@@ -1,0 +1,45 @@
+h1,h2,h3,h4,h5,h6,table {
+	padding: 0;
+	margin: 0;
+}
+.example-card {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.form-width{
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 100%;
+}
+
+.form-width label {
+  font-size: 18px;
+  font-weight: 1000;
+
+}
+
+.layout-center {
+  margin: auto;
+}
+.padd-y-20 {
+  padding-top: 19px;
+  padding-bottom: 19px;
+}
+
+.spinner {
+	width: 100%;
+	min-height: 350px;
+}
+
+.outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.middle {
+  display: table-cell;
+  vertical-align: middle;
+}
