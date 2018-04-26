@@ -22,12 +22,12 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
   }
 
-  uploadImage(event : any, imageType:string) {
+  uploadImage(event: any, imageType: string) {
     const file = (<HTMLInputElement>event.target).files[0];
     this.processImage(file, imageType);
   }
 
-  processImage(file: File, imageType:string) {
+  processImage(file: File, imageType: string) {
     const preview = document.querySelector(`img[name=${imageType}Preview]`);
     const reader = new FileReader();
     this[`${imageType}Preview`] = false;
@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit {
     for (let i = 0; i < length; i++) {
       ua[i] = image.charCodeAt(i);
     }
-    this[`${imageType}Bytes`]= imageBytes;
+    this[`${imageType}Bytes`] = imageBytes;
   }
 
  compareImages() {
