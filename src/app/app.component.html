@@ -1,33 +1,10 @@
-<mat-card class="example-card">
-  <h1>AWS Rekognition...</h1>
-  <div class="row">
-    <div class="col">
-      <div class="form-width">
-        <label for="singleFile">Upload file</label>
-        <input type="file" [(ngModel)] ="fileToUpload" (change)="uploadImage($event)" name="fileToUpload" id="fileToUpload" ng-accept="image/*">
-      </div>
+<nav>
+  <a routerLink="/sign-up">Sign up here</a>
+  <a routerLink="/login">Login</a>
+  <a routerLink="/insurance">Insurance</a>
+</nav>
+<hr/>
+<router-outlet></router-outlet>
 
-      <div [hidden]="!preview">
-        <img name ="preview" src="" width="100%"height="350">
-      </div> 
-    </div>
-    <div class="col">
-      
-      <div class="outer" [hidden]="success">
-        <div class="middle">
-          <mat-spinner *ngIf="loading" class="layout-center"></mat-spinner>
-          <p *ngIf="error" style="padding-right:20px">
-            <ngb-alert  type ="danger" [dismissible]="false">
-              <strong>Opps!</strong> Could not retrive the result for given image. Please try with some different image
-            </ngb-alert>
-          </p> 
-        </div>
-      </div>
-      <div [hidden]="!success">
-        <h2 [hidden]="!success" class="padd-y-20">Here you Go</h2>    
-        <div id="opResult"></div>
-      </div>
-    </div> 
-  </div>
- </mat-card>
+ 
 

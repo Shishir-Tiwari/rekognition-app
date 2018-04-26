@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
 
 @Injectable()
-export default class AppService {
+export class AppService {
   constructor() {
     this.anonLog();
   }
@@ -38,6 +38,30 @@ export default class AppService {
           reject(err); // an error occurred
         } else {
           resolve(data);
+        }
+      });
+    });
+    return promise;
+  }
+
+  compareImages(sourceImage, targetImage) {
+    const rekognition = new AWS.Rekognition();
+
+    const params = {
+      SourceImage: { /* required */
+        Bytes: sourceImage
+      },
+      TargetImage: { /* required */
+        Bytes: targetImage
+      },
+      SimilarityThreshold: 0.0
+    };
+    const promise = new Promise((resolve, reject) => {
+      rekognition.compareFaces(params, (err, data) => {
+        if (err) {
+          reject(err); // an error occurred
+        } else {
+          resolve(data.SourceImageFace.Confidence);
         }
       });
     });

@@ -37,6 +37,11 @@ import {
   MatTooltipModule,
 } from '@angular/material';
 import { AppComponent } from './app.component';
+import { SignupComponent } from './signup/signup.component';
+import { LoginComponent } from './login/login.component';
+import { InsuranceComponent } from './insurance/insurance.component';
+import { AppRoutingModule } from './/app-routing.module';
+import {AppService} from './app.service';
 
 @NgModule({
   exports: [
@@ -72,22 +77,23 @@ import { AppComponent } from './app.component';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-  ]
+  ],
 })
 export class DemoMaterialModule {}
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SignupComponent, LoginComponent, InsuranceComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     DemoMaterialModule,
     NgbModule.forRoot(),
-
+    AppRoutingModule,
   ],
-  providers: [],
+  providers: [AppService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
