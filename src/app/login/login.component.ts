@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   sourceBytes = null;
   targetBytes = null;
   loading = false;
+  compareFailed = false;
   constructor(private appService: AppService) { }
 
   ngOnInit() {
@@ -68,9 +69,11 @@ export class LoginComponent implements OnInit {
  compareImages() {
   this.compareSuccess = false;
   this.compareError = false;
-this.loading = true;
-    this.appService.compareImages(this.sourceBytes, this.targetBytes).then((confidence: number) => {
-      this.compareSuccess = confidence > 90;
+  this.compareFailed = false;
+  this.loading = true;
+    this.appService.compareImages(this.sourceBytes, this.targetBytes).then((similarity: number) => {
+      this.compareSuccess = similarity > 90;
+      this.compareFailed = similarity <= 90;
       this.loading = false;
     }).catch((err: any) => {
       this.compareError = true;

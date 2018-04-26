@@ -61,7 +61,7 @@ export class AppService {
         if (err) {
           reject(err); // an error occurred
         } else {
-          resolve(data.SourceImageFace.Confidence);
+          resolve(data.FaceMatches[0].Similarity);
         }
       });
     });
