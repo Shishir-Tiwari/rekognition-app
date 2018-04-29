@@ -1,0 +1,42 @@
+<mat-card class="example-card">
+    <h1>Face comparision</h1>
+  
+    <div class="row">
+      <div class="col">
+        <div class="form-width">
+          <label for="sourceFile">Upload source file</label>
+          <input type="file" [(ngModel)]="sourceFileToUpload" (change)="uploadImage($event, 'source')" name="sourceFileToUpload" id="sourceFileToUpload"
+            ng-accept="image/*">
+        </div>
+  
+        <div [hidden]="!sourcePreview">
+          <img name="sourcePreview" src="" width="auto" height="350">
+        </div>
+      </div>
+      <div class="col">
+        <div class="form-width">
+          <label for="targetFile">Upload target file</label>
+          <input type="file" [(ngModel)]="targetFileToUpload" (change)="uploadImage($event, 'target')" name="targetFileToUpload" id="targetFileToUpload"
+            ng-accept="image/*">
+        </div>
+  
+        <div [hidden]="!targetPreview">
+          <img name="targetPreview" src="" width="auto" height="350">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <mat-spinner *ngIf="loading" class="layout-center"></mat-spinner>
+      <button mat-raised-button color="primary" (click)="compareImages()">Compare</button>
+    </div>
+    <div class="outer" *ngIf="compareSuccess">
+      Login success !!
+    </div>
+    <div class="outer" *ngIf="compareFailed">
+      Login failed !!
+    </div>
+    <div class="outer" *ngIf="compareError">
+      Login error !!
+    </div>
+  
+  </mat-card>

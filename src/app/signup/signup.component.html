@@ -1,20 +1,76 @@
-<form>
-  	<div class="inputGroup inputGroup2">
-        <label for="fname">First name</label>
-        <input type="text" id="fname" class="password" />
-      </div>
-      <div class="inputGroup inputGroup2">
-          <label for="surname">Surname</label>
-          <input type="text" id="surname" class="password" />
-        </div>
-	<div class="inputGroup inputGroup1">
-		<label for="email1">Email</label>
-		<input type="text" id="email" class="email" maxlength="256" />
-		<p class="helper helper1">email@domain.com</p>
-		<span class="indicator"></span>
+<mat-card class="example-card">
+	<h1>Sign up</h1>
+
+	<div class="alert alert-info" role="alert" *ngIf="signUpSuccess">
+		Successfully signed in
 	</div>
-	
-	<div class="inputGroup inputGroup3">
-		<button id="login">Sign up</button>
+
+	<div class="alert alert-danger" role="alert" *ngIf="signUpFailed">
+		<strong>Opps!</strong> Something went wrong. Please try again
 	</div>
-</form>
+	<form novalidate (ngSubmit)="onSubmit()" #f="ngForm">
+		<div class="row">
+			<div class="col-xs-5">
+				<div class="form-group" [ngClass]="{
+					   'has-danger': firstName.invalid && (firstName.dirty || firstName.touched),
+					   'has-success': firstName.valid && (firstName.dirty || firstName.touched)
+				  }">
+					<label>First Name</label>
+					<input type="text" class="form-control" name="firstName" [(ngModel)]="model.firstName" required #firstName="ngModel">
+					<div class="form-control-feedback" *ngIf="firstName.errors && (firstName.dirty || firstName.touched)">
+						<p *ngIf="firstName.errors.required">First name is required</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-5">
+				<div class="form-group" [ngClass]="{
+        'has-danger': lastName.invalid && (lastName.dirty || lastName.touched),
+        'has-success': lastName.valid && (lastName.dirty || lastName.touched)
+   }">
+					<label>Last Name</label>
+					<input type="text" class="form-control" name="lastName" [(ngModel)]="model.lastName" required #lastName="ngModel">
+					<div class="form-control-feedback" *ngIf="lastName.errors && (lastName.dirty || lastName.touched)">
+						<p *ngIf="lastName.errors.required">Last name is required</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-5">
+				<div class="form-group" [ngClass]="{
+        'has-danger': email.invalid && (email.dirty || email.touched),
+        'has-success': email.valid && (email.dirty || email.touched)
+   }">
+					<label>Email</label>
+					<input type="email" class="form-control" name="email" [(ngModel)]="model.email" required pattern="[^ @]*@[^ @]*" #email="ngModel">
+					<div class="form-control-feedback" *ngIf="email.errors && (email.dirty || email.touched)">
+						<p *ngIf="email.errors.required">Email is required</p>
+						<p *ngIf="email.errors.pattern">Email must contain at least the @ character</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-xs-5">
+				<div class="form-group">
+					<label for="sourceFileToUpload">Password file input</label>
+					<input type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
+					 id="sourceFileToUpload" ng-accept="image/*">
+				</div>
+			</div>
+		</div>
+
+
+
+		<mat-spinner *ngIf="loading" class="layout-center"></mat-spinner>
+
+		<button (click)="onSubmit()" class="btn btn-primary">Sign Up</button>
+
+
+	</form>
+</mat-card>

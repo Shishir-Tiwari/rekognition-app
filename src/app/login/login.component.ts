@@ -8,39 +8,34 @@ import { AnyLengthString } from 'aws-sdk/clients/comprehend';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  compareSuccess = false;
-  compareError = false;
-  error = false;
-  sourcePreview = false;
-  targetPreview = false;
-  sourceBytes = null;
-  targetBytes = null;
-  loading = false;
-  compareFailed = false;
+  lastName: any;
+  firstName: any;
+  email: any;
+  loginSuccess: boolean;
+  loginFailed: boolean;
+  loading: boolean;
+  signUpSuccess: boolean;
+  signUpFailed: boolean;
+  sourceImageBytes: ArrayBuffer;
+  sourceFileToUpload = null;
+  error: boolean = false;
+
   constructor(private appService: AppService) { }
 
   ngOnInit() {
   }
 
-  uploadImage(event: any, imageType: string) {
+  processImage(event) {
     const file = (<HTMLInputElement>event.target).files[0];
-    this.processImage(file, imageType);
-  }
-
-  processImage(file: File, imageType: string) {
-    const preview = document.querySelector(`img[name=${imageType}Preview]`);
     const reader = new FileReader();
-    this[`${imageType}Preview`] = false;
+
     reader.onload = (e: any) => {  // Load base64 encoded image
-      const result = e.target.result;
-      (<HTMLImageElement>preview).src = result;
-      this[`${imageType}Preview`] = true;
-      this.encodeImage(result, imageType);
+      this.encodeImage(e.target.result);
     };
     reader.readAsDataURL(file);
   }
 
-  encodeImage(result, imageType) {
+  encodeImage(result) {
     let image = null;
     let isJpg = true;
     try {
@@ -63,22 +58,45 @@ export class LoginComponent implements OnInit {
     for (let i = 0; i < length; i++) {
       ua[i] = image.charCodeAt(i);
     }
-    this[`${imageType}Bytes`] = imageBytes;
+    this.sourceImageBytes = imageBytes;
   }
 
- compareImages() {
-  this.compareSuccess = false;
-  this.compareError = false;
-  this.compareFailed = false;
-  this.loading = true;
-    this.appService.compareImages(this.sourceBytes, this.targetBytes).then((similarity: number) => {
-      this.compareSuccess = similarity > 90;
-      this.compareFailed = similarity <= 90;
-      this.loading = false;
-    }).catch((err: any) => {
-      this.compareError = true;
-      this.loading = false;
-      console.log(err); // an error occurred
-    });
+  onSubmit() {
+    if (true) {
+      this.loading = true;
+      this.loginFailed = false;
+      this.loginSuccess = false;
+      this.appService.searchFacesByImage(this.sourceImageBytes)
+        .then((data: any) => {
+          if(data.confidence > 90 ) {
+            this.appService.getItem(data.faceId)
+            .then((data : any) => {
+              if(data) {
+                console.log(data);
+                this.loginSuccess = true;
+                this.email = data.email;
+                this.firstName = data.firstName;
+                this.lastName = data.lastName;
+                this.loading = false;
+              } else {
+                this.loginFailed = true;
+                this.loading = false;
+              }
+            })
+            .catch((error: any) => {
+              this.loginFailed = true;
+              this.loading = false;
+              console.log(error); // an error occurred
+            });
+          } else {
+            this.loginFailed = true;
+          }
+         
+        }).catch((error: any) => {
+          this.loginFailed = true;
+          this.loading = false;
+          console.log(error); // an error occurred
+        });
+    }
   }
 }

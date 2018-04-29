@@ -1,4 +1,4 @@
-/* colors */
+/* colors
 html {
     width: 100%;
     height: 100%;
@@ -142,8 +142,8 @@ html {
   }
   form .inputGroup1.focusWithText .helper {
     /*input[type='email']:focus + .helper {*/
-    -webkit-transform: translate(1.4em, 2em) scale(0.65);
+    /* -webkit-transform: translate(1.4em, 2em) scale(0.65);
             transform: translate(1.4em, 2em) scale(0.65);
     opacity: 1;
-  }
-  
+  } */
+   
