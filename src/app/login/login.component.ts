@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {AppService} from '../app.service';
 import { AnyLengthString } from 'aws-sdk/clients/comprehend';
 
@@ -8,6 +8,8 @@ import { AnyLengthString } from 'aws-sdk/clients/comprehend';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  capturedImage: any;
+  videoDisplay: boolean;
   lastName: any;
   firstName: any;
   email: any;
@@ -20,22 +22,19 @@ export class LoginComponent implements OnInit {
   sourceFileToUpload = null;
   error: boolean = false;
 
+  @ViewChild("video")
+  video: ElementRef;
+
+  @ViewChild("canvas")
+  canvas: ElementRef;
+
   constructor(private appService: AppService) { }
 
   ngOnInit() {
   }
 
-  processImage(event) {
-    const file = (<HTMLInputElement>event.target).files[0];
-    const reader = new FileReader();
-
-    reader.onload = (e: any) => {  // Load base64 encoded image
-      this.encodeImage(e.target.result);
-    };
-    reader.readAsDataURL(file);
-  }
-
-  encodeImage(result) {
+  encodeImage() {
+    const result = this.capturedImage;
     let image = null;
     let isJpg = true;
     try {
@@ -66,6 +65,7 @@ export class LoginComponent implements OnInit {
       this.loading = true;
       this.loginFailed = false;
       this.loginSuccess = false;
+      this.encodeImage();
       this.appService.searchFacesByImage(this.sourceImageBytes)
         .then((data: any) => {
           if(data.confidence > 90 ) {
@@ -99,4 +99,24 @@ export class LoginComponent implements OnInit {
         });
     }
   }
+
+  playVideo() {
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      this.videoDisplay = true;
+      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+          this.video.nativeElement.src = window.URL.createObjectURL(stream);
+          this.video.nativeElement.play();
+      });
+  }
+  }
+
+  stopVideo() {
+    this.video.nativeElement.pause();
+    this.videoDisplay = false;
+  }
+
+  snapImage() {
+    var context = this.canvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 480, 480);
+    this.capturedImage = this.canvas.nativeElement.toDataURL("image/png");
+}
 }

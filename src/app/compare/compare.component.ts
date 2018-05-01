@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import {AppService} from '../app.service';
 
 
@@ -9,6 +9,7 @@ import {AppService} from '../app.service';
 })
 export class CompareComponent implements OnInit {
 
+  capturedImage: any;
   compareSuccess = false;
   compareError = false;
   error = false;
@@ -18,6 +19,13 @@ export class CompareComponent implements OnInit {
   targetBytes = null;
   loading = false;
   compareFailed = false;
+
+  @ViewChild("video")
+  video: ElementRef;
+
+  @ViewChild("canvas")
+  canvas: ElementRef;
+
   constructor(private appService: AppService) { }
 
   ngOnInit() {
@@ -82,4 +90,6 @@ export class CompareComponent implements OnInit {
       console.log(err); // an error occurred
     });
   }
+
+  
 }
