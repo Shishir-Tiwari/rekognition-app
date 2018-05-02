@@ -32,6 +32,16 @@ export class SignupComponent implements OnInit {
   ngOnInit() {
   }
 
+  processImage(event) {	
+    const file = (<HTMLInputElement>event.target).files[0];	
+    const reader = new FileReader();	
+ 	 
+    reader.onload = (e: any) => {  // Load base64 encoded image
+      this.capturedImage = e.target.result;
+    };	
+    reader.readAsDataURL(file);	
+   }
+
   encodeImage() {
     const result = this.capturedImage;
     let image = null;
@@ -69,9 +79,9 @@ export class SignupComponent implements OnInit {
         .then((faceID: string) => {
           this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
             .then((data) => {
-                console.log(data);
-                this.signUpSuccess = true;
-                this.loading = false;
+              console.log(data);
+              this.signUpSuccess = true;
+              this.loading = false;
             })
             .catch((error: any) => {
               this.signUpFailed = true;
@@ -87,23 +97,23 @@ export class SignupComponent implements OnInit {
   }
 
   playVideo() {
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-          this.video.nativeElement.src = window.URL.createObjectURL(stream);
-          this.video.nativeElement.play();
+        this.video.nativeElement.srcObject = stream;
+        this.video.nativeElement.play();
       });
-  }
+    }
   }
 
   stopVideo() {
-    this.video.nativeElement.pause();
+    this.video.nativeElement.srcObject.getVideoTracks().forEach(track => track.stop());
     this.videoDisplay = false;
   }
 
   snapImage() {
     var context = this.canvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 480, 480);
     this.capturedImage = this.canvas.nativeElement.toDataURL("image/png");
-}
+  }
 
 }

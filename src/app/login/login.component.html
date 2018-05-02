@@ -8,7 +8,7 @@
       <div class="col-xs-5">
         <div class="form-group">
           <label for="sourceFileToUpload">Password file input</label>
-          <input type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
+          <input capture type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
             id="sourceFileToUpload" ng-accept="image/*">
         </div>
       </div>
