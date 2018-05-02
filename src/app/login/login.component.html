@@ -1,0 +1,58 @@
+<div *ngIf=!loginSuccess>
+  <mat-card class="example-card">
+    <h1>Login</h1>
+    <div class="alert alert-danger" role="alert" *ngIf="loginFailed">
+      <strong>Opps!</strong> Login failed
+    </div>
+    <!-- <div class="row">
+      <div class="col-xs-5">
+        <div class="form-group">
+          <label for="sourceFileToUpload">Password file input</label>
+          <input capture type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
+            id="sourceFileToUpload" ng-accept="image/*">
+        </div>
+      </div>
+    </div> -->
+
+    <div class="row">
+        <div class="form-group">
+          <label for="video">Facial password</label>
+          <button (click)="playVideo()" type="button" class="mr-3 btn btn-outline-secondary">Play Video</button>
+          <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button>
+          <button (click)="stopVideo()" type="button" class="btn btn-outline-secondary">Stop Video</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-5" *ngIf="videoDisplay">
+          <div class="form-group">
+            <video #video id="video" width="480" height="480" autoplay></video>
+          </div>
+        </div>
+        <div class="col-xs-5">
+          <div class="form-group">
+            <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas>
+            <img src="{{capturedImage}}" width="480" height="480" *ngIf="capturedImage" />
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <mat-spinner *ngIf="loading" class="layout-center"></mat-spinner>
+        <button (click)="onSubmit()" class="btn btn-primary">Login</button>
+      </div>
+  </mat-card>
+
+</div>
+
+<div *ngIf="loginSuccess">
+  <mat-card class="example-card">
+    <h1>Homepage</h1>
+    <dl class="row">
+      <dt class="col-sm-3">First Name</dt>
+      <dd class="col-sm-9">{{firstName}}</dd>
+      <dt class="col-sm-3">Last Name</dt>
+      <dd class="col-sm-9">{{lastName}}</dd>
+      <dt class="col-sm-3">Email</dt>
+      <dd class="col-sm-9">{{email}}</dd>
+    </dl>
+  </mat-card>
+</div>
