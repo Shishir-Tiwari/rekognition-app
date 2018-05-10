@@ -99,6 +99,7 @@ export class SignupComponent implements OnInit {
   playVideo() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
+      this.capturedImage =false;
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();
@@ -106,14 +107,11 @@ export class SignupComponent implements OnInit {
     }
   }
 
-  stopVideo() {
-    this.video.nativeElement.srcObject.getVideoTracks().forEach(track => track.stop());
-    this.videoDisplay = false;
-  }
-
   snapImage() {
     var context = this.canvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 480, 480);
     this.capturedImage = this.canvas.nativeElement.toDataURL("image/png");
+    this.video.nativeElement.srcObject.getVideoTracks().forEach(track => track.stop());
+    this.videoDisplay = false;
   }
 
 }

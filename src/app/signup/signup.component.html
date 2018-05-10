@@ -1,4 +1,4 @@
-<mat-card class="example-card">
+<!-- <mat-card class="example-card">
     <h1>Sign up</h1>
 
     <div class="alert alert-info" role="alert" *ngIf="signUpSuccess">
@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <!-- <div class="row">
+         <div class="row">
                 <div class="col-xs-5">
                     <div class="form-group">
                         <label for="sourceFileToUpload">Password file input</label>
@@ -63,7 +63,7 @@
                          id="sourceFileToUpload" ng-accept="image/*">
                     </div>
                 </div>
-            </div> -->
+            </div> 
 
         <div class="row">
             <div class="form-group">
@@ -94,4 +94,60 @@
 
 
     </form>
-</mat-card>
+</mat-card> -->
+
+<div class="container">
+    <div class="card card-register mx-auto mt-5">
+        <div class="card-header">Register an Account</div>
+        <div class="card-body">
+            <div class="alert alert-info" role="alert" *ngIf="signUpSuccess">
+                Successfully signed in
+            </div>
+            <div class="alert alert-danger" role="alert" *ngIf="signUpFailed">
+                <strong>Opps!</strong> Something went wrong. Please try again
+            </div>
+            <form novalidate (ngSubmit)="onSubmit()" #f="ngForm">
+                <div class="form-group">
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <label for="exampleInputName">First name</label>
+                            <input class="form-control" name="firstName" [(ngModel)]="model.firstName" required #firstName="ngModel" id="exampleInputName" type="text"
+                                aria-describedby="nameHelp" placeholder="Enter first name">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleInputLastName">Last name</label>
+                            <input class="form-control" name="lastName" [(ngModel)]="model.lastName" required #lastName="ngModel" id="exampleInputLastName" type="text"
+                                aria-describedby="nameHelp" placeholder="Enter last name">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Email address</label>
+                    <input class="form-control" name="email" [(ngModel)]="model.email" required pattern="[^ @]*@[^ @]*" #email="ngModel" id="exampleInputEmail1"
+                        type="email" aria-describedby="emailHelp" placeholder="Enter email">
+                </div>
+                <div class="form-group mb-0">
+                    <label for="video">Facial password</label>
+                </div>
+                <div class="form-group">
+                    <button (click)="playVideo()" type="button" class="mr-3 btn btn-outline-secondary">Play Video</button>
+                    <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button>
+                </div>
+
+                <div class="form-group" *ngIf="videoDisplay">
+                    <video #video id="video" autoplay></video>
+                </div>
+
+                <div class="form-group" *ngIf="capturedImage">
+                    <img src="{{capturedImage}}" *ngIf="capturedImage" />
+                </div>
+
+                <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas>
+                <a class="btn btn-primary btn-block" (click)="onSubmit()">Register</a>
+            </form>
+            <div class="text-center">
+                <a class="d-block small mt-3" routerLink="/login">Login Page</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -11,7 +11,7 @@ export class AppService {
     // Configure the credentials provider to use your identity pool
     AWS.config.region = 'us-east-2'; // Region
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'us-east-2:71bd3c00-e780-43cc-ac49-e1ae9020dd18',
+      IdentityPoolId: 'us-east-2:7c138827-bc77-4682-ab97-a78014179fb6',
     });
     
     // Make the call to obtain credentials

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import {AppService} from '../app.service';
+import { AppService } from '../app.service';
 import { AnyLengthString } from 'aws-sdk/clients/comprehend';
 
 @Component({
@@ -8,9 +8,9 @@ import { AnyLengthString } from 'aws-sdk/clients/comprehend';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+  lastName: any;
   capturedImage: any;
   videoDisplay: boolean;
-  lastName: any;
   firstName: any;
   email: any;
   loginSuccess: boolean;
@@ -21,6 +21,7 @@ export class LoginComponent implements OnInit {
   sourceImageBytes: ArrayBuffer;
   sourceFileToUpload = null;
   error: boolean = false;
+  show: boolean = false;
 
   @ViewChild("video")
   video: ElementRef;
@@ -31,17 +32,18 @@ export class LoginComponent implements OnInit {
   constructor(private appService: AppService) { }
 
   ngOnInit() {
+    this.playVideo();
   }
 
-  processImage(event) {	
-    const file = (<HTMLInputElement>event.target).files[0];	
-    const reader = new FileReader();	
- 	 
+  processImage(event) {
+    const file = (<HTMLInputElement>event.target).files[0];
+    const reader = new FileReader();
+
     reader.onload = (e: any) => {  // Load base64 encoded image
       this.capturedImage = e.target.result;
-    };	
-    reader.readAsDataURL(file);	
-   }
+    };
+    reader.readAsDataURL(file);
+  }
 
   encodeImage() {
     const result = this.capturedImage;
@@ -78,30 +80,30 @@ export class LoginComponent implements OnInit {
       this.encodeImage();
       this.appService.searchFacesByImage(this.sourceImageBytes)
         .then((data: any) => {
-          if(data.confidence > 90 ) {
+          if (data.confidence > 90) {
             this.appService.getItem(data.faceId)
-            .then((data : any) => {
-              if(data) {
-                console.log(data);
-                this.loginSuccess = true;
-                this.email = data.email;
-                this.firstName = data.firstName;
-                this.lastName = data.lastName;
-                this.loading = false;
-              } else {
+              .then((data: any) => {
+                if (data) {
+                  console.log(data);
+                  this.loginSuccess = true;
+                  this.email = data.email;
+                  this.firstName = data.firstName;
+                  this.lastName = data.lastName;
+                  this.loading = false;
+                } else {
+                  this.loginFailed = true;
+                  this.loading = false;
+                }
+              })
+              .catch((error: any) => {
                 this.loginFailed = true;
                 this.loading = false;
-              }
-            })
-            .catch((error: any) => {
-              this.loginFailed = true;
-              this.loading = false;
-              console.log(error); // an error occurred
-            });
+                console.log(error); // an error occurred
+              });
           } else {
             this.loginFailed = true;
           }
-         
+
         }).catch((error: any) => {
           this.loginFailed = true;
           this.loading = false;
@@ -113,6 +115,7 @@ export class LoginComponent implements OnInit {
   playVideo() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
+      this.capturedImage =false;
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();
@@ -120,13 +123,11 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  stopVideo() {
+  snapImage() {
+    var context = this.canvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 480, 480);
+    this.capturedImage = this.canvas.nativeElement.toDataURL("image/png");
     this.video.nativeElement.srcObject.getVideoTracks().forEach(track => track.stop());
     this.videoDisplay = false;
   }
 
-  snapImage() {
-    var context = this.canvas.nativeElement.getContext("2d").drawImage(this.video.nativeElement, 0, 0, 480, 480);
-    this.capturedImage = this.canvas.nativeElement.toDataURL("image/png");
-}
 }
