@@ -70,30 +70,46 @@ export class SignupComponent implements OnInit {
   }
 
   onSubmit() {
-    if (true) {
+  
       this.loading = true;
       this.signUpFailed = false;
       this.signUpSuccess = false;
       this.encodeImage();
-      this.appService.indexFaces(this.sourceImageBytes)
-        .then((faceID: string) => {
-          this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
-            .then((data) => {
+      this.appService.register(this.capturedImage)
+      .subscribe(data => {
+        if(data) {
               console.log(data);
               this.signUpSuccess = true;
               this.loading = false;
-            })
-            .catch((error: any) => {
-              this.signUpFailed = true;
-              this.loading = false;
-              console.log(error); // an error occurred
-            });
-        }).catch((error: any) => {
+        } else {
+          this.handleError({});
+        }  
+      }, this.handleError);
+      // this.appService.indexFaces(this.sourceImageBytes)
+      //   .then((faceID: string) => {
+      //     this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
+      //       .then((data) => {
+      //         console.log(data);
+      //         this.signUpSuccess = true;
+      //         this.loading = false;
+      //       })
+      //       .catch((error: any) => {
+      //         this.signUpFailed = true;
+      //         this.loading = false;
+      //         console.log(error); // an error occurred
+      //       });
+      //   }).catch((error: any) => {
+      //     this.signUpFailed = true;
+      //     this.loading = false;
+      //     console.log(error); // an error occurred
+      //   });
+    
+  }
+
+  handleError(error) {
           this.signUpFailed = true;
           this.loading = false;
           console.log(error); // an error occurred
-        });
-    }
   }
 
   playVideo() {

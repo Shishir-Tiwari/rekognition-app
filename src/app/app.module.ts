@@ -43,6 +43,7 @@ import { InsuranceComponent } from './insurance/insurance.component';
 import { AppRoutingModule } from './/app-routing.module';
 import {AppService} from './app.service';
 import { CompareComponent } from './compare/compare.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   exports: [
@@ -89,6 +90,7 @@ export class DemoMaterialModule {}
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     FormsModule,
     DemoMaterialModule,
     NgbModule.forRoot(),

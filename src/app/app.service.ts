@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
-
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Injectable()
 export class AppService {
-  constructor() {
+  constructor(private http: HttpClient) {
     this.anonLog();
   }
 
@@ -13,7 +13,7 @@ export class AppService {
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: 'us-east-2:7c138827-bc77-4682-ab97-a78014179fb6',
     });
-    
+
     // Make the call to obtain credentials
     (<AWS.CognitoIdentityCredentials>AWS.config.credentials).get(function () {
       // Credentials will be available when this function is called.
@@ -146,8 +146,8 @@ export class AppService {
     return promise;
   }
 
-   //check the documentation
-   getItem(faceId) {
+  //check the documentation
+  getItem(faceId) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
       TableName: 'profile_collection',
@@ -162,9 +162,9 @@ export class AppService {
         if (err) {
           reject(err); // an error occurred
         } else {
-          if(data.Item) {
+          if (data.Item) {
             resolve({
-              email : data.Item.email.S,
+              email: data.Item.email.S,
               firstName: data.Item.firstName.S,
               lastName: data.Item.lastName.S
             });
@@ -176,6 +176,15 @@ export class AppService {
       });
     });
     return promise;
+  }
+
+  register(image) {
+    debugger;
+    return this.http.post(`https://05y3xpamki.execute-api.us-east-2.amazonaws.com/prod/mySample4`,
+    JSON.stringify({
+      image,
+      email:'grace',
+    }));
   }
 }
 
