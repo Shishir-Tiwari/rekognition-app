@@ -3,6 +3,8 @@ import * as AWS from 'aws-sdk';
 
 @Injectable()
 export class AppService {
+  collectionName: string = 'ProfileCollection-1';
+  tableName: string = 'profile_collection';
   constructor() {
     this.anonLog();
   }
@@ -13,7 +15,7 @@ export class AppService {
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
       IdentityPoolId: 'us-east-2:7c138827-bc77-4682-ab97-a78014179fb6',
     });
-    
+
     // Make the call to obtain credentials
     (<AWS.CognitoIdentityCredentials>AWS.config.credentials).get(function () {
       // Credentials will be available when this function is called.
@@ -72,7 +74,7 @@ export class AppService {
   indexFaces(sourceImage) {
     const rekognition = new AWS.Rekognition();
     const params = {
-      CollectionId: "ProfileCollection",
+      CollectionId: this.collectionName,
       Image: {
         Bytes: sourceImage
       }
@@ -91,10 +93,30 @@ export class AppService {
     return promise;
   }
 
+  detectText(sourceImage) {
+    const rekognition = new AWS.Rekognition();
+    const params = {
+      Image: {
+        Bytes: sourceImage
+      }
+    };
+    // response['FaceRecords'][0]['Face']['FaceId']
+
+    const promise = new Promise((resolve, reject) => {
+      rekognition.detectText(params, (err, data) => {
+        if (err) {
+          reject(err); // an error occurred
+        } else {
+          resolve(data.TextDetections);
+        }
+      });
+    });
+    return promise;
+  }
   searchFacesByImage(sourceImage) {
     const rekognition = new AWS.Rekognition();
     const params = {
-      CollectionId: "ProfileCollection",
+      CollectionId: this.collectionName,
       Image: {
         Bytes: sourceImage
       }
@@ -115,10 +137,10 @@ export class AppService {
     return promise;
   }
 
-  putItem(FaceId, email, firstName, lastName) {
+  putItem(FaceId, email, firstName = 'firstName', lastName = 'lastName') {
     const dynamodb = new AWS.DynamoDB();
     const params = {
-      TableName: 'profile_collection',
+      TableName: this.tableName,
       Item: {
         RekognitionId: {
           S: FaceId
@@ -127,10 +149,10 @@ export class AppService {
           S: email
         },
         firstName: {
-          S: firstName
+          S: 'firstName' 
         },
         lastName: {
-          S: lastName
+          S: 'lastName'
         }
       }
     };
@@ -146,11 +168,11 @@ export class AppService {
     return promise;
   }
 
-   //check the documentation
-   getItem(faceId) {
+  //check the documentation
+  getItem(faceId) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
-      TableName: 'profile_collection',
+      TableName: this.tableName,
       Key: {
         RekognitionId: {
           S: faceId
@@ -162,9 +184,9 @@ export class AppService {
         if (err) {
           reject(err); // an error occurred
         } else {
-          if(data.Item) {
+          if (data.Item) {
             resolve({
-              email : data.Item.email.S,
+              email: data.Item.email.S,
               firstName: data.Item.firstName.S,
               lastName: data.Item.lastName.S
             });
@@ -181,6 +203,8 @@ export class AppService {
 
 /**
 aws rekognition create-collection --collection-id ProfileCollection --region us-east-2 
+aws rekognition create-collection --collection-id ProfileCollection-1 --region us-east-2
+"CollectionArn": "aws:rekognition:us-east-2:475771691951:collection/ProfileCollection-1",                                                                                                                                                              
 aws dynamodb create-table --table-name ProfileCollection --attribute-definitions AttributeName=RekognitionId,AttributeType=S AttributeName=email,AttributeType=S --key-schema AttributeName=RekognitionId,KeyType=HASH AttributeName=email,KeyType=RANGE --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --region us-east-2
 aws s3 mb s3://profile-collection-bucket-name --region us-east-2
 

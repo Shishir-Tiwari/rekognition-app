@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
+import {size, includes, filter} from 'lodash';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -32,15 +33,16 @@ export class SignupComponent implements OnInit {
   ngOnInit() {
   }
 
-  processImage(event) {	
-    const file = (<HTMLInputElement>event.target).files[0];	
-    const reader = new FileReader();	
- 	 
+  processImage(event) {
+    const file = (<HTMLInputElement>event.target).files[0];
+    const reader = new FileReader();
+
     reader.onload = (e: any) => {  // Load base64 encoded image
       this.capturedImage = e.target.result;
-    };	
-    reader.readAsDataURL(file);	
-   }
+      this.detectText();
+    };
+    reader.readAsDataURL(file);
+  }
 
   encodeImage() {
     const result = this.capturedImage;
@@ -69,37 +71,58 @@ export class SignupComponent implements OnInit {
     this.sourceImageBytes = imageBytes;
   }
 
-  onSubmit() {
-    if (true) {
-      this.loading = true;
-      this.signUpFailed = false;
-      this.signUpSuccess = false;
-      this.encodeImage();
-      this.appService.indexFaces(this.sourceImageBytes)
-        .then((faceID: string) => {
-          this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
-            .then((data) => {
-              console.log(data);
-              this.signUpSuccess = true;
-              this.loading = false;
-            })
-            .catch((error: any) => {
-              this.signUpFailed = true;
-              this.loading = false;
-              console.log(error); // an error occurred
-            });
-        }).catch((error: any) => {
-          this.signUpFailed = true;
-          this.loading = false;
-          console.log(error); // an error occurred
-        });
-    }
+  detectText(): any {
+    this.encodeImage();
+    this.appService.detectText(this.sourceImageBytes)
+      .then((textDetectionList: any) => {
+        this.retrieveInformation(textDetectionList);
+      }).catch((error: any) => {
+        this.signUpFailed = true;
+        this.loading = false;
+        console.log(error); // an error occurred
+      });
   }
+
+  ignoreList: string[] = ['Learner Driver Licence', 'New South Wales'];
+
+  retrieveInformation(textDetectionList): void {
+   let filteredList = filter(textDetectionList, item => {
+      return size(item) > 2 && !includes(this.ignoreList, item) && item.Type === 'LINE';
+    });
+
+    console.log('filteredList  ',filteredList);
+  }
+
+  onSubmit() {
+    this.loading = true;
+    this.signUpFailed = false;
+    this.signUpSuccess = false;
+    this.encodeImage();
+    this.appService.indexFaces(this.sourceImageBytes)
+      .then((faceID: string) => {
+        this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
+          .then((data) => {
+            console.log(data);
+            this.signUpSuccess = true;
+            this.loading = false;
+          })
+          .catch((error: any) => {
+            this.signUpFailed = true;
+            this.loading = false;
+            console.log(error); // an error occurred
+          });
+      }).catch((error: any) => {
+        this.signUpFailed = true;
+        this.loading = false;
+        console.log(error); // an error occurred
+      });
+  }
+
 
   playVideo() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
-      this.capturedImage =false;
+      this.capturedImage = false;
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();

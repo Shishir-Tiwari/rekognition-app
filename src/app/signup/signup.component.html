@@ -107,7 +107,7 @@
                 <strong>Opps!</strong> Something went wrong. Please try again
             </div>
             <form novalidate (ngSubmit)="onSubmit()" #f="ngForm">
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <div class="form-row">
                         <div class="col-md-6">
                             <label for="exampleInputName">First name</label>
@@ -120,27 +120,29 @@
                                 aria-describedby="nameHelp" placeholder="Enter last name">
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <div class="form-group">
                     <label for="exampleInputEmail1">Email address</label>
                     <input class="form-control" name="email" [(ngModel)]="model.email" required pattern="[^ @]*@[^ @]*" #email="ngModel" id="exampleInputEmail1"
                         type="email" aria-describedby="emailHelp" placeholder="Enter email">
                 </div>
                 <div class="form-group mb-0">
-                    <label for="video">Facial password</label>
+                    <label for="video">Upload Documents</label>
                 </div>
                 <div class="form-group">
-                    <button (click)="playVideo()" type="button" class="mr-3 btn btn-outline-secondary">Play Video</button>
-                    <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button>
+                        <input capture type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
+                        id="sourceFileToUpload" ng-accept="image/*">
+                    <!-- <button (click)="playVideo()" type="button" class="mr-3 btn btn-outline-secondary">Play Video</button>
+                    <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button> -->
                 </div>
 
                 <div class="form-group" *ngIf="videoDisplay">
                     <video #video id="video" autoplay></video>
                 </div>
 
-                <div class="form-group" *ngIf="capturedImage">
+                <!-- <div class="form-group" *ngIf="capturedImage">
                     <img src="{{capturedImage}}" *ngIf="capturedImage" />
-                </div>
+                </div> -->
 
                 <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas>
                 <a class="btn btn-primary btn-block" (click)="onSubmit()">Register</a>
