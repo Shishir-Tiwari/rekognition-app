@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
-import {size, includes, filter} from 'lodash';
+import {size, includes, filter, get, split, map} from 'lodash';
+import { Person } from './person';
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -8,6 +9,7 @@ import {size, includes, filter} from 'lodash';
 })
 
 export class SignupComponent implements OnInit {
+  person: Person;
   videoDisplay: boolean = false;
   capturedImage: any;
   loading: boolean;
@@ -83,13 +85,26 @@ export class SignupComponent implements OnInit {
       });
   }
 
-  ignoreList: string[] = ['Learner Driver Licence', 'New South Wales'];
 
   retrieveInformation(textDetectionList): void {
-   let filteredList = filter(textDetectionList, item => {
-      return size(item) > 2 && !includes(this.ignoreList, item) && item.Type === 'LINE';
-    });
+   let filteredList = map(filter(textDetectionList, item => {
+     let text: string = item.DetectedText;
+      return size(text) > 2 &&  !includes(text, 'Licence') && !includes(text, 'Date') &&
+      !includes(text, 'Driver Licence') &&  !includes(text, 'New South Wales')  && item.Type === 'LINE';
+    }), 'DetectedText');
 
+    var dateString: string = filteredList[size(filteredList)-1] || '';
+    let person: Person = {
+      name: split(get(filteredList, '[0]'), ' Card')[0],
+      cardNumber: get(filteredList, '[1]'),
+      address: `${get(filteredList, '[2]')} ${get(filteredList, '[3]')} ${get(filteredList, '[4]')}`,
+      licenceNo: get(filteredList, '[5]'),
+      licenseClass: get(filteredList, '[6]'),
+      dateOfBirth: dateString.slice(0,11),
+      dateOfExpiry: dateString.slice(12),
+    }
+    this.person = person;
+    console.log('Person  ',person);
     console.log('filteredList  ',filteredList);
   }
 
@@ -100,7 +115,7 @@ export class SignupComponent implements OnInit {
     this.encodeImage();
     this.appService.indexFaces(this.sourceImageBytes)
       .then((faceID: string) => {
-        this.appService.putItem(faceID, this.model.email, this.model.firstName, this.model.lastName)
+        this.appService.putItem(faceID, this.model.email, this.person)
           .then((data) => {
             console.log(data);
             this.signUpSuccess = true;

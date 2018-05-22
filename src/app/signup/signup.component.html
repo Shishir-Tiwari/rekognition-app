@@ -143,7 +143,28 @@
                 <!-- <div class="form-group" *ngIf="capturedImage">
                     <img src="{{capturedImage}}" *ngIf="capturedImage" />
                 </div> -->
+                <dl class="row" *ngIf="person">
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9">{{person.name}}</dd>
+                      
+                        <dt class="col-sm-3">Card number</dt>
+                        <dd class="col-sm-9">{{person.cardNumber}}</dd>
+                      
+                        <dt class="col-sm-3">Address</dt>
+                        <dd class="col-sm-9">{{person.address}}</dd>
 
+                        <dt class="col-sm-3">Licence number</dt>
+                        <dd class="col-sm-9">{{person.licenceNo}}</dd>
+
+                        <dt class="col-sm-3">Licence Class</dt>
+                        <dd class="col-sm-9">{{person.licenseClass}}</dd>
+
+                        <dt class="col-sm-3">Date Of Birth</dt>
+                        <dd class="col-sm-9">{{person.dateOfBirth}}</dd>
+
+                        <dt class="col-sm-3">Expiry Date</dt>
+                        <dd class="col-sm-9">{{person.dateOfExpiry}}</dd>
+                      </dl>
                 <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas>
                 <a class="btn btn-primary btn-block" (click)="onSubmit()">Register</a>
             </form>

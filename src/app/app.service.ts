@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
+import { Person } from './signup/person';
 
 @Injectable()
 export class AppService {
@@ -137,7 +138,7 @@ export class AppService {
     return promise;
   }
 
-  putItem(FaceId, email, firstName = 'firstName', lastName = 'lastName') {
+  putItem(FaceId, email, person:Person) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
       TableName: this.tableName,
@@ -149,10 +150,10 @@ export class AppService {
           S: email
         },
         firstName: {
-          S: 'firstName' 
+          S: person.name 
         },
         lastName: {
-          S: 'lastName'
+          S: ' '
         }
       }
     };
