@@ -43,6 +43,7 @@ import { InsuranceComponent } from './insurance/insurance.component';
 import { AppRoutingModule } from './/app-routing.module';
 import {AppService} from './app.service';
 import { CompareComponent } from './compare/compare.component';
+import { MaintainComponent } from './maintain/maintain.component';
 
 @NgModule({
   exports: [
@@ -85,7 +86,7 @@ export class DemoMaterialModule {}
 @NgModule({
   declarations: [
     AppComponent,
-    SignupComponent, LoginComponent, InsuranceComponent, CompareComponent
+    SignupComponent, LoginComponent, InsuranceComponent, CompareComponent, MaintainComponent
   ],
   imports: [
     BrowserModule,

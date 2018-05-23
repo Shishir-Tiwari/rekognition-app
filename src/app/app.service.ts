@@ -138,6 +138,46 @@ export class AppService {
     return promise;
   }
 
+  deleteFaces() {
+    const rekognition = new AWS.Rekognition();
+    const params = {
+      CollectionId: this.collectionName,
+      FaceIds: [
+        "412d82b5-9f25-4189-b3ea-58aa2185af83",
+        "8a2351bf-d611-41a3-8237-21166e033f83",
+        "987eea2c-6f42-4081-810f-ee9df76c357b",
+        "d08559b7-b196-41cd-bf58-390188f34bcf"
+     ]
+    };
+
+    const promise = new Promise((resolve, reject) => {
+      rekognition.deleteFaces(params, (err, data) => {
+        if (err) console.log(err, err.stack); // an error occurred
+        else     console.log(data);   
+      });
+    });
+    return promise;
+  }
+
+  getAllFaces() {
+    const rekognition = new AWS.Rekognition();
+    const params = {
+      CollectionId: this.collectionName,
+    };
+
+    const promise = new Promise((resolve, reject) => {
+      rekognition.listFaces(params, (err, data) => {
+        if (err) console.log(err, err.stack); // an error occurred
+        else     {
+         
+          console.log(data);  
+          return data.Faces.length;
+        } 
+      });
+    });
+    return promise;
+  }
+
   putItem(FaceId, email, person:Person) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
