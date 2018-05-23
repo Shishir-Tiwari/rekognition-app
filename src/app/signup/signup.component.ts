@@ -9,6 +9,7 @@ import { Person } from './person';
 })
 
 export class SignupComponent implements OnInit {
+  loadingText: boolean;
   person: Person;
   videoDisplay: boolean = false;
   capturedImage: any;
@@ -36,6 +37,7 @@ export class SignupComponent implements OnInit {
   }
 
   processImage(event) {
+    this.loadingText = true;
     const file = (<HTMLInputElement>event.target).files[0];
     const reader = new FileReader();
 
@@ -79,33 +81,48 @@ export class SignupComponent implements OnInit {
       .then((textDetectionList: any) => {
         this.retrieveInformation(textDetectionList);
       }).catch((error: any) => {
+        this.loadingText = false;
         this.signUpFailed = true;
-        this.loading = false;
         console.log(error); // an error occurred
       });
   }
 
 
   retrieveInformation(textDetectionList): void {
+  let name:string;
    let filteredList = map(filter(textDetectionList, item => {
      let text: string = item.DetectedText;
-      return size(text) > 2 &&  !includes(text, 'Licence') && !includes(text, 'Date') &&
+     if(item.Type === 'LINE' && includes(text, 'Card')) {
+      name =  split(text, ' Card')[0];
+     }
+     
+      return size(text) > 2 &&  !includes(text, 'Licence') && !includes(text, 'Card') && !includes(text, 'Date') &&
       !includes(text, 'Driver Licence') &&  !includes(text, 'New South Wales')  && item.Type === 'LINE';
     }), 'DetectedText');
 
     var dateString: string = filteredList[size(filteredList)-1] || '';
     let person: Person = {
-      name: split(get(filteredList, '[0]'), ' Card')[0],
-      cardNumber: get(filteredList, '[1]'),
-      address: `${get(filteredList, '[2]')} ${get(filteredList, '[3]')} ${get(filteredList, '[4]')}`,
-      licenceNo: get(filteredList, '[5]'),
-      licenseClass: get(filteredList, '[6]'),
-      dateOfBirth: dateString.slice(0,11),
-      dateOfExpiry: dateString.slice(12),
+      name,
+      cardNumber: this.isNumeric(get(filteredList, '[0]')) ? get(filteredList, '[0]') : '-',
+      address: `${get(filteredList, '[1]')} ${get(filteredList, '[2]')} ${get(filteredList, '[3]')}`,
+      licenceNo:this.isNumeric(get(filteredList, '[4]')) ? get(filteredList, '[4]') : '-',
+      licenseClass: get(filteredList, '[5]'),
+      dateOfBirth: this.isValidDate(dateString.slice(0,11))? dateString.slice(0,11) : '-',
+      dateOfExpiry: this.isValidDate(dateString.slice(12))? dateString.slice(12) : '-',
     }
     this.person = person;
-    console.log('Person  ',person);
-    console.log('filteredList  ',filteredList);
+    this.loadingText = false;
+
+    console.log( this.person );
+    console.log( filteredList )
+  }
+
+  isNumeric(num): boolean {
+    return !isNaN(num.replace(/\s/g, ''));
+  }
+
+  isValidDate(date:string): boolean{
+     return !isNaN(Date.parse(date));
   }
 
   onSubmit() {
