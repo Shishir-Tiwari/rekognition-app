@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
-import {size, includes, filter, get, split, map} from 'lodash';
+import { size, includes, filter, get, split, map } from 'lodash';
 import { Person } from './person';
 @Component({
   selector: 'app-signup',
@@ -89,40 +89,40 @@ export class SignupComponent implements OnInit {
 
 
   retrieveInformation(textDetectionList): void {
-  let name:string;
-   let filteredList = map(filter(textDetectionList, item => {
-     let text: string = item.DetectedText;
-     if(item.Type === 'LINE' && includes(text, 'Card')) {
-      name =  split(text, ' Card')[0];
-     }
-     
-      return size(text) > 2 &&  !includes(text, 'Licence') && !includes(text, 'Card') && !includes(text, 'Date') &&
-      !includes(text, 'Driver Licence') &&  !includes(text, 'New South Wales')  && item.Type === 'LINE';
+    let name: string;
+    let filteredList = map(filter(textDetectionList, item => {
+      let text: string = item.DetectedText;
+      if (item.Type === 'LINE' && includes(text, 'Card')) {
+        name = split(text, ' Card')[0];
+      }
+
+      return size(text) > 2 && !includes(text, 'Licence') && !includes(text, 'Card') && !includes(text, 'Date') &&
+        !includes(text, 'Driver Licence') && !includes(text, 'New South Wales') && item.Type === 'LINE';
     }), 'DetectedText');
 
-    var dateString: string = filteredList[size(filteredList)-1] || '';
+    var dateString: string = filteredList[size(filteredList) - 1] || '';
     let person: Person = {
       name,
       cardNumber: this.isNumeric(get(filteredList, '[0]')) ? get(filteredList, '[0]') : '-',
       address: `${get(filteredList, '[1]')} ${get(filteredList, '[2]')} ${get(filteredList, '[3]')}`,
-      licenceNo:this.isNumeric(get(filteredList, '[4]')) ? get(filteredList, '[4]') : '-',
+      licenceNo: this.isNumeric(get(filteredList, '[4]')) ? get(filteredList, '[4]') : '-',
       licenseClass: get(filteredList, '[5]'),
-      dateOfBirth: this.isValidDate(dateString.slice(0,11))? dateString.slice(0,11) : '-',
-      dateOfExpiry: this.isValidDate(dateString.slice(12))? dateString.slice(12) : '-',
+      dateOfBirth: this.isValidDate(dateString.slice(0, 11)) ? dateString.slice(0, 11) : '-',
+      dateOfExpiry: this.isValidDate(dateString.slice(12)) ? dateString.slice(12) : '-',
     }
     this.person = person;
     this.loadingText = false;
 
-    console.log( this.person );
-    console.log( filteredList )
+    console.log(this.person);
+    console.log(filteredList)
   }
 
   isNumeric(num): boolean {
     return !isNaN(num.replace(/\s/g, ''));
   }
 
-  isValidDate(date:string): boolean{
-     return !isNaN(Date.parse(date));
+  isValidDate(date: string): boolean {
+    return !isNaN(Date.parse(date));
   }
 
   onSubmit() {
@@ -130,6 +130,15 @@ export class SignupComponent implements OnInit {
     this.signUpFailed = false;
     this.signUpSuccess = false;
     this.encodeImage();
+    //clean -up start
+    this.appService.searchFacesByImage(this.sourceImageBytes)
+      .then((data: any) => {
+        this.appService.deleteFaces(data.facesIds);
+      }).catch((error: any) => {
+        console.log(error); // an error occurred
+      });
+
+      //clean-up end
     this.appService.indexFaces(this.sourceImageBytes)
       .then((faceID: string) => {
         this.appService.putItem(faceID, this.model.email, this.person)
@@ -155,7 +164,7 @@ export class SignupComponent implements OnInit {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
       this.capturedImage = false;
-      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment" } }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();
       });

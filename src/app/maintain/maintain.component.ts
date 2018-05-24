@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AppService} from '../app.service';
+import { AppService } from '../app.service';
+import { map } from 'lodash';
 
 @Component({
   selector: 'app-maintain',
@@ -7,20 +8,24 @@ import {AppService} from '../app.service';
   styleUrls: ['./maintain.component.css']
 })
 export class MaintainComponent implements OnInit {
-  facesLength:any;
+  facesLength: any;
   constructor(private appService: AppService) { }
 
   ngOnInit() {
   }
 
   deleteAllFaces() {
-    this.appService.deleteFaces();
+    this.appService.getAllFaces()
+      .then((faces: string[]) => {
+        this.appService.deleteFaces(faces);
+        this.facesLength = faces.length;
+      });
   }
 
   getAllFaces() {
     this.appService.getAllFaces()
-    .then(facesLength => {
-      this.facesLength = facesLength;
-    });
+      .then((faces: string[]) => {
+        this.facesLength = faces.length;
+      });
   }
 }

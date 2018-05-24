@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as AWS from 'aws-sdk';
 import { Person } from './signup/person';
+import { map } from 'lodash';
 
 @Injectable()
 export class AppService {
@@ -128,32 +129,35 @@ export class AppService {
         if (err) {
           reject(err); // an error occurred
         } else {
-          resolve({
-            faceId: data.FaceMatches[0].Face.FaceId,
-            confidence: data.FaceMatches[0].Face.Confidence
-          });
+          if (data.FaceMatches.length) {
+            resolve({
+              faceId: data.FaceMatches[0].Face.FaceId,
+              confidence: data.FaceMatches[0].Face.Confidence,
+              facesIds: map(data.FaceMatches, 'Face.FaceId'),
+            });
+          } else {
+            reject(err); // an error occurred
+          }
         }
       });
     });
     return promise;
   }
 
-  deleteFaces() {
+  deleteFaces(faceIds: string[]) {
     const rekognition = new AWS.Rekognition();
     const params = {
       CollectionId: this.collectionName,
-      FaceIds: [
-        "412d82b5-9f25-4189-b3ea-58aa2185af83",
-        "8a2351bf-d611-41a3-8237-21166e033f83",
-        "987eea2c-6f42-4081-810f-ee9df76c357b",
-        "d08559b7-b196-41cd-bf58-390188f34bcf"
-     ]
+      FaceIds: faceIds
     };
 
     const promise = new Promise((resolve, reject) => {
       rekognition.deleteFaces(params, (err, data) => {
         if (err) console.log(err, err.stack); // an error occurred
-        else     console.log(data);   
+        else {
+          console.log('clean-up complete');
+          console.log(data)
+        };
       });
     });
     return promise;
@@ -167,18 +171,18 @@ export class AppService {
 
     const promise = new Promise((resolve, reject) => {
       rekognition.listFaces(params, (err, data) => {
-        if (err) console.log(err, err.stack); // an error occurred
-        else     {
-         
-          console.log(data);  
-          return data.Faces.length;
-        } 
+        if (err) {
+          console.log(err, err.stack); // an error occurred
+          reject(err);
+        } else {
+          resolve(map(data.Faces, 'FaceId'));
+        }
       });
     });
     return promise;
   }
 
-  putItem(FaceId, email, person:Person) {
+  putItem(FaceId, email, person: Person) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
       TableName: this.tableName,
@@ -190,7 +194,7 @@ export class AppService {
           S: email
         },
         firstName: {
-          S: person.name 
+          S: person.name
         },
         lastName: {
           S: ' '
