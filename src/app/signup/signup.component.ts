@@ -48,6 +48,28 @@ export class SignupComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
+  onSuccess(image) {
+    this.capturedImage = image;
+    this.detectText();
+  }
+
+  captureImage() {
+    if (navigator.camera) {
+      navigator.camera.getPicture(this.onSuccess, () => {
+        alert('try again !!');
+      }, {
+        quality: 25,
+        destinationType: Camera.DestinationType.FILE_URI,
+        saveToPhotoAlbum: true,
+        cameraDirection:1
+      });
+    }
+    else {
+      alert("camera not found");
+
+    }
+  }
+
   encodeImage() {
     const result = this.capturedImage;
     let image = null;

@@ -32,6 +32,7 @@ export class MaintainComponent implements OnInit {
   }
 
   onSuccess(imageUri) {
+    alert("sag"+ imageUri);
     this.messgae = "success";
     this.hideImage = false;
     var image = document.getElementById('capturedImage');
@@ -47,7 +48,8 @@ export class MaintainComponent implements OnInit {
       navigator.camera.getPicture(this.onSuccess, this.onFail, {
         quality: 25,
         destinationType: Camera.DestinationType.FILE_URI,
-        saveToPhotoAlbum: true
+        saveToPhotoAlbum: true,
+        cameraDirection:1
       });
     }
     else {

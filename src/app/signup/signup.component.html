@@ -132,6 +132,7 @@
                 <div class="form-group">
                     <div class="form-row">
                         <div class="col-xs-5">
+                            <button (click)="captureImage()" type="button" class="mr-3 btn btn-outline-secondary">Take Picture</button>
                             <input capture type="file" [(ngModel)]="sourceFileToUpload" class="form-control-file" (change)="processImage($event)" name="sourceFileToUpload"
                                 id="sourceFileToUpload" ng-accept="image/*">
                         </div>
