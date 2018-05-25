@@ -4,6 +4,12 @@
 
     <button mat-raised-button color="primary" (click)="getAllFaces()">GetAllFaces</button>
 
-    Size : {{facesLength}}
+
+    <button mat-raised-button color="primary" (click)="captureImage()">Start Camera</button>
+
+
+    <div>Size : {{facesLength}}</div>
+    <div>message: {{message}}</div>
+    <img id="capturedImage" style="height:100vh;width:100%" [hidden]="hideImage">
 </div>
 </div>

@@ -194,7 +194,7 @@ export class AppService {
           S: email
         },
         firstName: {
-          S: person.name
+          S: person.name || 'Sample'
         },
         lastName: {
           S: ' '
