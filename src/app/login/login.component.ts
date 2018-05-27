@@ -73,22 +73,32 @@ export class LoginComponent implements OnInit {
   }
 
   captureImage() {
-    if ((<any>navigator).camera) {
-     (<any> navigator).camera.getPicture((image) => {
-       this.capturedImage = image;
-      }, () => {
-        alert('try again !!');
-      }, {
-        quality: 25,
-        destinationType: Camera.DestinationType.DATA_URL,
-        cameraDirection:1
-      });
-    }
-    else {
-      alert("camera not found");
-    }
+    var promise = new Promise((resolve, reject) => {
+      if ((<any>navigator).camera) {
+        (<any>navigator).camera.getPicture((image) => {
+          resolve(image);
+        }, (error) => {
+          reject();
+        }, {
+            quality: 25,
+            destinationType: (<any>Camera).DestinationType.DATA_URL,
+            cameraDirection: 1
+          });
+      }
+      else {
+        alert("camera not found");
 
+      }
+    });
+
+    promise.then((image) => {
+      this.capturedImage = image;
+    })
+    .catch(() => {
+      alert('error !!');
+    });
   }
+
 
   onSubmit() {
     this.loading = true;

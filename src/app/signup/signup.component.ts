@@ -49,29 +49,33 @@ export class SignupComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  onSuccess(image) {
-    this.loadingText = true;
-    this.capturedImage = image;
-    this.detectText();
-  }
-
   captureImage() {
-    if ((<any>navigator).camera) {
-      (<any>navigator).camera.getPicture((image) => { 
-        this.onSuccess(image);
-      }, (error) => {
-        alert('try again !!'+ error);
-      }, {
-        quality: 25,
-        destinationType:  (<any>Camera).DestinationType.DATA_URL,
-        cameraDirection:1
+    var promise = new Promise((resolve, reject) => {
+      if ((<any>navigator).camera) {
+        (<any>navigator).camera.getPicture((image) => {
+          resolve(image);
+        }, (error) => {
+          reject(error);
+        }, {
+            quality: 25,
+            destinationType: (<any>Camera).DestinationType.DATA_URL,
+            cameraDirection: 1
+          });
+      }
+      else {
+        alert("camera not found");
+
+      }
+    });
+
+    promise.then((image) => {
+      this.loadingText = true;
+      this.capturedImage = image;
+      this.detectText();
+    })
+      .catch((error) => {
+        console.log(error);
       });
-    }
-    else {
-      alert("camera not found");
-
-    }
-
   }
 
   encodeImage() {
