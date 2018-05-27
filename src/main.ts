@@ -13,3 +13,5 @@ document.addEventListener("deviceready", function() {
 
 }, false);
 
+// platformBrowserDynamic().bootstrapModule(AppModule)
+// .catch(err => console.log(err));

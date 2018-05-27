@@ -191,7 +191,7 @@ export class AppService {
           S: FaceId
         },
         email: {
-          S: email
+          S: email || 'email'
         },
         firstName: {
           S: person.name || 'Sample'

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
 import { AnyLengthString } from 'aws-sdk/clients/comprehend';
-
+declare var Camera: any;
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
   constructor(private appService: AppService) { }
 
   ngOnInit() {
-    this.playVideo();
+    // this.playVideo();
   }
 
   processImage(event) {
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
     let image = null;
     let isJpg = true;
     try {
-      image = atob(result.split('data:image/jpeg;base64,')[1]);
+      image = atob(result);
     } catch (e) {
       isJpg = false;
     }
@@ -72,50 +72,66 @@ export class LoginComponent implements OnInit {
     this.sourceImageBytes = imageBytes;
   }
 
+  captureImage() {
+    if ((<any>navigator).camera) {
+     (<any> navigator).camera.getPicture((image) => {
+       this.capturedImage = image;
+      }, () => {
+        alert('try again !!');
+      }, {
+        quality: 25,
+        destinationType: Camera.DestinationType.DATA_URL,
+        cameraDirection:1
+      });
+    }
+    else {
+      alert("camera not found");
+    }
+
+  }
+
   onSubmit() {
-    if (true) {
-      this.loading = true;
-      this.loginFailed = false;
-      this.loginSuccess = false;
-      this.encodeImage();
-      this.appService.searchFacesByImage(this.sourceImageBytes)
-        .then((data: any) => {
-          if (data.confidence > 90) {
-            this.appService.getItem(data.faceId)
-              .then((data: any) => {
-                if (data) {
-                  console.log(data);
-                  this.loginSuccess = true;
-                  this.email = data.email;
-                  this.firstName = data.firstName;
-                  this.lastName = data.lastName;
-                  this.loading = false;
-                } else {
-                  this.loginFailed = true;
-                  this.loading = false;
-                }
-              })
-              .catch((error: any) => {
+    this.loading = true;
+    this.loginFailed = false;
+    this.loginSuccess = false;
+    this.encodeImage();
+    this.appService.searchFacesByImage(this.sourceImageBytes)
+      .then((data: any) => {
+        if (data.confidence > 90) {
+          this.appService.getItem(data.faceId)
+            .then((data: any) => {
+              if (data) {
+                console.log(data);
+                this.loginSuccess = true;
+                this.email = data.email;
+                this.firstName = data.firstName;
+                this.lastName = data.lastName;
+                this.loading = false;
+              } else {
                 this.loginFailed = true;
                 this.loading = false;
-                console.log(error); // an error occurred
-              });
-          } else {
-            this.loginFailed = true;
-          }
-
-        }).catch((error: any) => {
+              }
+            })
+            .catch((error: any) => {
+              this.loginFailed = true;
+              this.loading = false;
+              console.log(error); // an error occurred
+            });
+        } else {
           this.loginFailed = true;
-          this.loading = false;
-          console.log(error); // an error occurred
-        });
-    }
+        }
+
+      }).catch((error: any) => {
+        this.loginFailed = true;
+        this.loading = false;
+        console.log(error); // an error occurred
+      });
   }
 
   playVideo() {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
-      this.capturedImage =false;
+      this.capturedImage = false;
       navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();

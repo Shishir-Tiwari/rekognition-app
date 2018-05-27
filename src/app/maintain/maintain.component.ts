@@ -44,17 +44,17 @@ export class MaintainComponent implements OnInit {
   }
 
   captureImage() {
-    if (navigator.camera) {
-      navigator.camera.getPicture(this.onSuccess, this.onFail, {
-        quality: 25,
-        destinationType: Camera.DestinationType.FILE_URI,
-        saveToPhotoAlbum: true,
-        cameraDirection:1
-      });
-    }
-    else {
-      alert("camera not found");
+    // if (navigator.camera) {
+    //   navigator.camera.getPicture(this.onSuccess, this.onFail, {
+    //     quality: 25,
+    //     destinationType: Camera.DestinationType.FILE_URI,
+    //     saveToPhotoAlbum: true,
+    //     cameraDirection:1
+    //   });
+    // }
+    // else {
+    //   alert("camera not found");
 
-    }
+    // }
   }
 }

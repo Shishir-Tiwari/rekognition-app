@@ -11,16 +11,16 @@
             <label for="video">Facial password</label>
           </div>
           <div class="form-group">
-            <button (click)="playVideo()" type="button" class="mr-3 btn btn-outline-secondary">Play Video</button>
-            <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button>
+              <button (click)="captureImage()" type="button" class="mr-3 btn btn-outline-secondary">Take Picture</button>
+            <!-- <button (click)="snapImage()" type="button" class="mr-3 btn btn-outline-secondary">Snap image</button> -->
           </div>
-          <div class="form-group" *ngIf="videoDisplay">
+          <!-- <div class="form-group" *ngIf="videoDisplay">
             <video #video id="video" autoplay></video>
           </div>
           <div class="form-group" *ngIf="capturedImage">
             <img src="{{capturedImage}}" *ngIf="capturedImage" />
           </div>
-          <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas>
+          <canvas #canvas id="canvas" width="480" height="480" [hidden]=true></canvas> -->
           <a class="btn btn-primary btn-block" (click)="onSubmit()">Login</a>
         </form>
         <div class="text-center">

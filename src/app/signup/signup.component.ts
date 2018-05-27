@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
 import { size, includes, filter, get, split, map } from 'lodash';
 import { Person } from './person';
+declare var Camera: any;
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.component.html',
@@ -49,18 +50,20 @@ export class SignupComponent implements OnInit {
   }
 
   onSuccess(image) {
+    this.loadingText = true;
     this.capturedImage = image;
     this.detectText();
   }
 
   captureImage() {
-    if (navigator.camera) {
-      navigator.camera.getPicture(this.onSuccess, () => {
-        alert('try again !!');
+    if ((<any>navigator).camera) {
+      (<any>navigator).camera.getPicture((image) => { 
+        this.onSuccess(image);
+      }, (error) => {
+        alert('try again !!'+ error);
       }, {
         quality: 25,
-        destinationType: Camera.DestinationType.FILE_URI,
-        saveToPhotoAlbum: true,
+        destinationType:  (<any>Camera).DestinationType.DATA_URL,
         cameraDirection:1
       });
     }
@@ -68,6 +71,7 @@ export class SignupComponent implements OnInit {
       alert("camera not found");
 
     }
+
   }
 
   encodeImage() {
@@ -75,7 +79,7 @@ export class SignupComponent implements OnInit {
     let image = null;
     let isJpg = true;
     try {
-      image = atob(result.split('data:image/jpeg;base64,')[1]);
+      image = atob(result);
     } catch (e) {
       isJpg = false;
     }
@@ -160,7 +164,7 @@ export class SignupComponent implements OnInit {
         console.log(error); // an error occurred
       });
 
-      //clean-up end
+    //clean-up end
     this.appService.indexFaces(this.sourceImageBytes)
       .then((faceID: string) => {
         this.appService.putItem(faceID, this.model.email, this.person)
@@ -186,7 +190,7 @@ export class SignupComponent implements OnInit {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       this.videoDisplay = true;
       this.capturedImage = false;
-      navigator.mediaDevices.getUserMedia({ video: {facingMode: "environment" } }).then(stream => {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(stream => {
         this.video.nativeElement.srcObject = stream;
         this.video.nativeElement.play();
       });
