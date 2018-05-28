@@ -129,13 +129,15 @@
 
         if (item.Type === 'LINE') {
           let nextText: string = textDetectionList[index + 1].DetectedText;
+          let nextNextText: string = textDetectionList[index + 2].DetectedText;
           if (includes(text, 'Card')) {
             name = split(text, ' Card')[0];
             cardNumber = nextText;
           } else if (includes(text, 'Licence No')) {
             licenceNo = nextText;
           } else if (includes(text, 'Licence Class')) {
-            licenseClass = nextText;
+            if(size(nextText)===1) licenseClass = nextNextText + nextText ;
+            else licenseClass =  nextText ;
           } else if (includes(text, 'Date')) {
             dateStringRaw = nextText;
           }
