@@ -150,6 +150,9 @@
                 <!-- <div class="form-group" *ngIf="capturedImage">
                     <img src="{{capturedImage}}" *ngIf="capturedImage" />
                 </div> -->
+                <div class="row" *ngIf="message"> 
+                    {{message}}
+                </div>                
                 <dl class="row" *ngIf="person">
                     <dt class="col-sm-3">Name</dt>
                     <dd class="col-sm-9">{{person.name}}</dd>

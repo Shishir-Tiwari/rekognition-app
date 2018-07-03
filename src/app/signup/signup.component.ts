@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { AppService } from '../app.service';
-import { size, includes, filter, get, split, map } from 'lodash';
+import { size, includes, filter, get, split, map, each, compact, slice, join, replace } from 'lodash';
 import { Person } from './person';
 @Component({
   selector: 'app-signup',
@@ -9,6 +9,7 @@ import { Person } from './person';
 })
 
 export class SignupComponent implements OnInit {
+  message: string;
   loadingText: boolean;
   person: Person;
   videoDisplay: boolean = false;
@@ -88,43 +89,96 @@ export class SignupComponent implements OnInit {
   }
 
 
+
   retrieveInformation(textDetectionList): void {
-    let name: string;
-    let filteredList = map(filter(textDetectionList, item => {
+    let name: string, cardNumber, licenceNo, licenseClass, address, dateStringRaw;
+    let filteredList = compact(map(filter(textDetectionList, (item, index) => {
       let text: string = item.DetectedText;
-      if (item.Type === 'LINE' && includes(text, 'Card')) {
-        name = split(text, ' Card')[0];
+
+      if (item.Type === 'LINE') {
+        let nextText: string = textDetectionList[index + 1].DetectedText;
+        let nextNextText: string = textDetectionList[index + 2].DetectedText;
+        if (includes(text, 'Card')) {
+          name = split(text, ' Card')[0];
+          cardNumber = nextText;
+        } else if (includes(text, 'Licence No')) {
+          licenceNo = nextText;
+        } else if (includes(text, 'Licence Class')) {
+          if(size(nextText)===1) licenseClass = nextNextText + nextText ;
+          else licenseClass =  nextText ;
+        } else if (includes(text, 'Date')) {
+          dateStringRaw = nextText;
+        }
+      }
+      return size(text) > 2 && !includes(text, 'Licence') && !includes(text, 'Card') &&
+        !includes(text, 'Date') && !includes(text, 'Driver Licence') &&
+        !includes(text, 'New South Wales') && item.Type === 'LINE';
+    }), 'DetectedText'));
+
+    console.log(filteredList);
+
+    if (filteredList.length) {
+      let dateObj = this.getDateObj(filteredList[size(filteredList) - 1]);
+      if (!(dateObj.dateOfBirth && dateObj.dateOfExpiry)) {
+        dateObj = this.getDateObj(dateStringRaw);
       }
 
-      return size(text) > 2 && !includes(text, 'Licence') && !includes(text, 'Card') && !includes(text, 'Date') &&
-        !includes(text, 'Driver Licence') && !includes(text, 'New South Wales') && item.Type === 'LINE';
-    }), 'DetectedText');
+      const numList = this.getNumbers(filteredList);
+      console.log(numList);
+      if (!cardNumber) cardNumber = numList[0];
+      if (!licenceNo) licenceNo = numList[1];
 
-    var dateString: string = filteredList[size(filteredList) - 1] || '';
-    let person: Person = {
-      name,
-      cardNumber: this.isNumeric(get(filteredList, '[0]')) ? get(filteredList, '[0]') : '-',
-      address: `${get(filteredList, '[1]')} ${get(filteredList, '[2]')} ${get(filteredList, '[3]')}`,
-      licenceNo: this.isNumeric(get(filteredList, '[4]')) ? get(filteredList, '[4]') : '-',
-      licenseClass: get(filteredList, '[5]'),
-      dateOfBirth: this.isValidDate(dateString.slice(0, 11)) ? dateString.slice(0, 11) : '-',
-      dateOfExpiry: this.isValidDate(dateString.slice(12)) ? dateString.slice(12) : '-',
+      let person: Person = {
+        name,
+        cardNumber: this.isNumeric(cardNumber) ? cardNumber : '-',
+        address: this.getAddress(filteredList),
+        licenceNo: this.isNumeric(licenceNo) ? licenceNo : '-',
+        licenseClass: this.isNumeric(licenseClass) ? '-' : licenseClass,
+        dateOfBirth: dateObj.dateOfBirth,
+        dateOfExpiry: dateObj.dateOfExpiry,
+      }
+      this.person = person;
+      this.loadingText = false;
+    } else {
+      this.message = "Please capture document in landscape mode";
     }
-    this.person = person;
-    this.loadingText = false;
 
     console.log(this.person);
-    console.log(filteredList)
   }
 
-  isNumeric(num): boolean {
-    return !isNaN(num.replace(/\s/g, ''));
+  getNumbers(filteredList) {
+    return map(filter(filteredList, item => size(join(item.match(/\d+\s+/g), '')) > 5),
+      item => join(item.match(/\d+/), ''));
+  }
+
+  getDateObj(dateString: string) {
+    const date1 = join(slice(dateString, 0, 11), '');
+    const date2 = slice(dateString, 12, 22).join('');
+    return {
+      dateOfBirth: this.isValidDate(date1) ? date1 : null,
+      dateOfExpiry: this.isValidDate(date2) ? date2 : null
+    };
+  }
+
+  getAddress(arrayList): string {
+    let address = '-';
+    for (let i = 0; i < arrayList.length; i++) {
+      if (arrayList[i].includes('NSW')) {
+        address = `${arrayList[i - 2]} ${arrayList[i - 1]}  ${arrayList[i]}`;
+        break;
+      }
+    }
+    return address;
+  }
+
+  isNumeric(num, regex = /\s/g): boolean {
+    return !isNaN(Number(replace(num, regex, '')));
   }
 
   isValidDate(date: string): boolean {
     return !isNaN(Date.parse(date));
   }
-
+  
   onSubmit() {
     this.loading = true;
     this.signUpFailed = false;

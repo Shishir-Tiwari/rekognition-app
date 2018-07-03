@@ -182,6 +182,8 @@ export class AppService {
     return promise;
   }
 
+  
+
   putItem(FaceId, email, person: Person) {
     const dynamodb = new AWS.DynamoDB();
     const params = {
@@ -194,7 +196,7 @@ export class AppService {
           S: email
         },
         firstName: {
-          S: person.name
+          S: person.name || 'my sample name'
         },
         lastName: {
           S: ' '
