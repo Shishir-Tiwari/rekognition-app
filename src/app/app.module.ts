@@ -39,10 +39,10 @@ import {
 import { AppComponent } from './app.component';
 import { SignupComponent } from './signup/signup.component';
 import { LoginComponent } from './login/login.component';
-import { InsuranceComponent } from './insurance/insurance.component';
+// import { InsuranceComponent } from './insurance/insurance.component';
 import { AppRoutingModule } from './/app-routing.module';
 import {AppService} from './app.service';
-import { CompareComponent } from './compare/compare.component';
+// import { CompareComponent } from './compare/compare.component';
 import { MaintainComponent } from './maintain/maintain.component';
 
 @NgModule({
@@ -86,7 +86,8 @@ export class DemoMaterialModule {}
 @NgModule({
   declarations: [
     AppComponent,
-    SignupComponent, LoginComponent, InsuranceComponent, CompareComponent, MaintainComponent
+    //InsuranceComponent, CompareComponent
+    SignupComponent, LoginComponent, MaintainComponent
   ],
   imports: [
     BrowserModule,
